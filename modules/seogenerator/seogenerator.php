@@ -253,29 +253,30 @@ class SeoGenerator extends Module
      */
     public function generateAllCategoriesSEO()
     {
-        $categories = Category::getCategories((int)Context::getContext()->language->id, false);
+        // Récupérer toutes les catégories directement depuis la base
+        $sql = 'SELECT id_category FROM ' . _DB_PREFIX_ . 'category WHERE id_category > 2 AND active = 1';
+        $categoryIds = Db::getInstance()->executeS($sql);
+
         $count = 0;
         $languages = Language::getLanguages(false);
 
-        foreach ($categories as $categoryData) {
-            foreach ($categoryData as $cat) {
-                $category = new Category((int)$cat['id_category']);
+        foreach ($categoryIds as $catData) {
+            $category = new Category((int)$catData['id_category']);
 
-                if ($category->id_category <= 2) {
-                    continue; // Skip Home et Root
-                }
-
-                foreach ($languages as $lang) {
-                    $id_lang = (int)$lang['id_lang'];
-
-                    $category->meta_title[$id_lang] = $this->generateCategoryMetaTitle($category, $id_lang);
-                    $category->meta_description[$id_lang] = $this->generateCategoryMetaDescription($category, $id_lang);
-                    // meta_keywords supprimé - n'existe plus en PrestaShop 9
-                }
-
-                $category->save();
-                $count++;
+            if (!Validate::isLoadedObject($category)) {
+                continue;
             }
+
+            foreach ($languages as $lang) {
+                $id_lang = (int)$lang['id_lang'];
+
+                $category->meta_title[$id_lang] = $this->generateCategoryMetaTitle($category, $id_lang);
+                $category->meta_description[$id_lang] = $this->generateCategoryMetaDescription($category, $id_lang);
+                // meta_keywords supprimé - n'existe plus en PrestaShop 9
+            }
+
+            $category->save();
+            $count++;
         }
 
         return $count;
