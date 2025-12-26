@@ -8,6 +8,10 @@
 /.github/
 /admin-api/
 /admin-dev/
+
+# Scripts temporaires de génération SEO
+/generate_seo.php
+/generate_seo_fixed.php
 /app/
 /cache/
 /classes/
@@ -210,7 +214,8 @@ app/config/config.php
 # Pour un projet personnel : ignorer le core, versionner SEULEMENT vos modifications
 
 modules/*
-!modules/votremodule/  # Décommentez et renommez pour vos modules custom
+!modules/seogenerator/  # Module SEO Generator
+!modules/votremodule/   # Décommentez et renommez pour vos autres modules custom
 override/*
 !override/.gitkeep
 themes/*/
